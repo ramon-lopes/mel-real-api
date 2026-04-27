@@ -1,0 +1,33 @@
+package com.melreal.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+/**
+ * Configura CORS para que o frontend (HTML estático) consiga chamar a API.
+ *
+ * Em produção, troque cors.allowed-origins=* pelo domínio real do seu site
+ * em application.properties para maior segurança.
+ */
+@Configuration
+public class CorsConfig {
+
+    @Value("${cors.allowed-origins:*}")
+    private String allowedOrigins;
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOriginPatterns(allowedOrigins)
+                        .allowedMethods("GET", "POST", "OPTIONS")
+                        .allowedHeaders("*");
+            }
+        };
+    }
+}
