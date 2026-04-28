@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Endpoints de administração — protegidos por token simples via header.
- *
+ * <p>
  * Header obrigatório: X-Admin-Token: <valor configurado em application.properties>
- *
+ * <p>
  * POST /admin/reset   → zera o contador (novo dia antes da meia-noite)
  */
 @RestController
