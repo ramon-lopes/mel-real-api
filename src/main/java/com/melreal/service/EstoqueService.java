@@ -10,11 +10,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Gerencia o estoque diário em memória.
- *
+ * <p>
  * - O limite é configurado em application.properties (estoque.limite-diario).
  * - Todo dia à meia-noite o contador é resetado automaticamente.
  * - AtomicInteger garante que operações concorrentes (vários usuários ao mesmo
- *   tempo) não causem inconsistências — sem precisar de synchronized manual.
+ * tempo) não causem inconsistências — sem precisar de synchronized manual.
  */
 @Service
 public class EstoqueService {
@@ -45,7 +45,7 @@ public class EstoqueService {
      * Tenta reservar 'quantidade' unidades.
      *
      * @return true se havia estoque suficiente e a reserva foi feita,
-     *         false se não havia estoque.
+     * false se não havia estoque.
      */
     public boolean reservar(int quantidade) {
         // Loop CAS (Compare-And-Swap): tenta atualizar atomicamente.
@@ -93,5 +93,10 @@ public class EstoqueService {
     public void resetarManualmente() {
         reservados.set(0);
         log.info("Estoque resetado manualmente.");
+    }
+
+    public void setLimite(int novoLimite) {
+        this.limiteDiario = novoLimite;
+        log.info("Limite diário atualizado para {} unidades.", novoLimite);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Endpoints públicos consumidos pelo frontend.
- *
+ * <p>
  * GET  /estoque          → retorna disponível/limite/esgotado
  * POST /estoque/reservar → tenta reservar N unidades
  * POST /estoque/liberar  → devolve N unidades (cancelamento)
@@ -28,7 +28,7 @@ public class EstoqueController {
     @GetMapping
     public ResponseEntity<EstoqueResponse> consultar() {
         int disponivel = estoqueService.getDisponivel();
-        int limite     = estoqueService.getLimite();
+        int limite = estoqueService.getLimite();
 
         return ResponseEntity.ok(new EstoqueResponse(
                 disponivel,
@@ -76,5 +76,26 @@ public class EstoqueController {
                 estoqueService.getLimite(),
                 disponivel == 0
         ));
+    }
+
+    // ── PUT /estoque/admin/limite ─────────────────────────────────────────────
+    @PutMapping("/admin/limite")
+    public ResponseEntity<EstoqueResponse> atualizarLimite(
+            @RequestParam int valor,
+            @RequestHeader("X-Admin-Key") String key) {
+        if (!"sua-chave-secreta".equals(key)) return ResponseEntity.status(403).build();
+        estoqueService.setLimite(valor);
+        int d = estoqueService.getDisponivel();
+        return ResponseEntity.ok(new EstoqueResponse(d, valor, d == 0));
+    }
+
+    // ── POST /estoque/admin/reset ─────────────────────────────────────────────
+    @PostMapping("/admin/reset")
+    public ResponseEntity<EstoqueResponse> reset(
+            @RequestHeader("X-Admin-Key") String key) {
+        if (!"sua-chave-secreta".equals(key)) return ResponseEntity.status(403).build();
+        estoqueService.resetarManualmente();
+        int d = estoqueService.getDisponivel();
+        return ResponseEntity.ok(new EstoqueResponse(d, estoqueService.getLimite(), false));
     }
 }
